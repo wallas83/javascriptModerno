@@ -6,6 +6,7 @@ import{ todoList } from '../index';
 
 const divTodoList = document.querySelector('.todo-list');
 const txtInput   = document.querySelector('.new-todo');
+const btnBorrar   = document.querySelector('.clear-completed');
 
 export const crearTodoHtml = (todo ) => {
 
@@ -30,13 +31,41 @@ export const crearTodoHtml = (todo ) => {
 //eventos 
 
 txtInput.addEventListener('keyup', (event) => {
-    console.log(txtInput.value.length);
-    if(event.keyCode  === 13 && txtInput.value.length > 1){
-            console.log(txtInput.value);
+  //  console.log(txtInput.value.length);
+    if(event.keyCode  === 13 && txtInput.value.length > 0){
+       
         const nuevoTodo = new Todo(txtInput.value);
         todoList.nuevoTodo(nuevoTodo);
         crearTodoHtml(nuevoTodo);
-        txtInput.value = ' ';
+        txtInput.value = '';
     }
     
 }); 
+
+divTodoList.addEventListener('click', (event) => {
+
+        const nombreElemento = event.target.localName;//input, label, button
+        const todoElemento = event.target.parentElement.parentElement;
+        const todoId    = todoElemento.getAttribute('data-id');
+      
+        if(nombreElemento.includes('input')){//click en el check
+            todoList.marcarCompletado(todoId);
+            todoElemento.classList.toggle('completed');
+        }else if( nombreElemento.includes('button')){// si contienen button hay que borrar
+                todoList.eliminarTodo(todoId);
+                divTodoList.removeChild( todoElemento);  // elimina el html
+        }
+
+});
+
+
+btnBorrar.addEventListener('click', () => {
+    todoList.eliminarCompletados();
+    for (let i = divTodoList.children.length - 1; i >= 0; i--) {
+        const elemento = divTodoList.children[i];
+       // console.log(elemento);
+       if(  elemento.classList.contains('completed')){
+        divTodoList.removeChild(elemento);
+       }
+    }
+});
